@@ -1,0 +1,39 @@
+# Ignore unnecessary files for Docker builds
+node_modules
+npm-debug.log
+target
+*.log
+.git
+.gitignore
+README.md
+*.md
+.vscode
+.idea
+
+# Ignore other service directories during individual builds
+# (Each Dockerfile will specifically COPY what it needs)
+
+# Documentation and guides
+DEPLOYMENT_GUIDE.md
+DATABASE_SETUP.md
+DOCKER_GUIDE.md
+BACK4APP_*.md
+MONOREPO_*.md
+PUBLICATION_STEPS.md
+FREE_HOSTING_ALTERNATIVES.md
+
+# Scripts
+*.bat
+*.sh
+quick-deploy.*
+back4app-deploy.*
+docker-start.*
+
+# Test files
+test-admin-promotion.html
+deployment-config.js
+
+# Build artifacts from other services
+auth-quiz-service/target
+question-bank-service/target  
+result-service/target
