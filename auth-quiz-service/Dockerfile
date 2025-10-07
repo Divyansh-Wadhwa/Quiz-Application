@@ -21,5 +21,8 @@ RUN ./mvnw clean package -DskipTests
 # Expose port
 EXPOSE 8080
 
+# Set environment variables
+ENV SPRING_PROFILES_ACTIVE=back4app
+
 # Run the application
 CMD ["java", "-jar", "target/auth-quiz-service-1.0.0.jar"]

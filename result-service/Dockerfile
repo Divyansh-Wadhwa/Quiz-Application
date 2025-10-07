@@ -21,5 +21,8 @@ RUN ./mvnw clean package -DskipTests
 # Expose port
 EXPOSE 8082
 
+# Set environment variables
+ENV SPRING_PROFILES_ACTIVE=back4app
+
 # Run the application
 CMD ["java", "-jar", "target/result-service-1.0.0.jar"]
