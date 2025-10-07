@@ -1,0 +1,81 @@
+version: '3.8'
+services:
+  # Database
+  postgres:
+    image: postgres:15
+    container_name: quiz-postgres
+    environment:
+      POSTGRES_DB: quiz_application
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Auth Service
+  auth-service:
+    build: ./auth-quiz-service
+    container_name: quiz-auth-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quiz_application
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Question Bank Service
+  question-service:
+    build: ./question-bank-service
+    container_name: quiz-question-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quiz_application
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Result Service
+  result-service:
+    build: ./result-service
+    container_name: quiz-result-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quiz_application
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Frontend (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: quiz-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./online-quiz-frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - auth-service
+      - question-service
+      - result-service
+
+volumes:
+  postgres_data:

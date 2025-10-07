@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Promotion</title>
+</head>
+
+<body>
+    <h1>Admin Promotion Test</h1>
+    <div>
+        <h2>Current Admin List:</h2>
+        <div id="current-admin-list"></div>
+
+        <h2>Test User Promotion:</h2>
+        <input type="text" id="test-username" placeholder="Enter username to promote">
+        <button onclick="promoteUser()">Promote to Admin</button>
+
+        <h2>Test Role Checker:</h2>
+        <input type="text" id="check-username" placeholder="Enter username to check">
+        <button onclick="checkIsAdmin()">Check Admin Status</button>
+        <div id="check-result"></div>
+    </div>
+
+    <script>
+        // Display current admin list
+        function displayAdminList() {
+            const adminList = JSON.parse(localStorage.getItem('adminList') || '[]');
+            document.getElementById('current-admin-list').innerHTML =
+                adminList.length > 0 ? adminList.join(', ') : 'No promoted admins';
+        }
+
+        // Promote user to admin
+        function promoteUser() {
+            const username = document.getElementById('test-username').value.trim();
+            if (!username) return alert('Please enter a username');
+
+            const adminList = JSON.parse(localStorage.getItem('adminList') || '[]');
+            const lowercaseUsername = username.toLowerCase();
+
+            if (!adminList.includes(lowercaseUsername)) {
+                adminList.push(lowercaseUsername);
+                localStorage.setItem('adminList', JSON.stringify(adminList));
+                alert(`User "${username}" promoted to admin!`);
+                displayAdminList();
+            } else {
+                alert(`User "${username}" is already an admin!`);
+            }
+        }
+
+        // Check if user is admin (simulate role-checker logic)
+        function checkIsAdmin() {
+            const username = document.getElementById('check-username').value.trim();
+            if (!username) return alert('Please enter a username');
+
+            const adminList = JSON.parse(localStorage.getItem('adminList') || '[]');
+            const defaultAdmins = ['admin', 'superuser', 'system'];
+            const allAdmins = [...defaultAdmins, ...adminList];
+            const isAdmin = allAdmins.includes(username.toLowerCase());
+
+            document.getElementById('check-result').innerHTML =
+                `<strong>${username}</strong> is ${isAdmin ? '' : 'NOT '}an admin`;
+        }
+
+        // Initialize display
+        displayAdminList();
+    </script>
+</body>
+
+</html>
