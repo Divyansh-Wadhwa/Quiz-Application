@@ -68,6 +68,11 @@ public class Back4AppDatabaseConfig {
         config.setMinimumIdle(2);
         config.setConnectionTimeout(20000);
         
+        // Add SSL configuration for Supabase
+        config.addDataSourceProperty("sslmode", "require");
+        config.addDataSourceProperty("ssl", "true");
+        config.addDataSourceProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+        
         return new HikariDataSource(config);
     }
 }
