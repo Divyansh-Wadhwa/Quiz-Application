@@ -12,8 +12,8 @@ WORKDIR /app
 COPY auth-quiz-service/pom.xml .
 COPY auth-quiz-service/src ./src
 
-# Package the application
-RUN mvn clean package -DskipTests
+# Package the application with Spring Boot repackage
+RUN mvn clean package spring-boot:repackage -DskipTests
 
 # Runtime stage
 FROM openjdk:17-jdk-slim
@@ -22,7 +22,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built JAR from build stage
-COPY --from=build /app/target/auth-quiz-service-1.0.0.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Expose port
 EXPOSE 8080
