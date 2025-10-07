@@ -30,7 +30,7 @@ public class Back4AppDatabaseConfig {
             try {
                 URI uri = new URI(databaseUrl);
                 
-                String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + uri.getPort() + uri.getPath();
+                String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + uri.getPort() + uri.getPath() + "?sslmode=require";
                 config.setJdbcUrl(jdbcUrl);
                 
                 String userInfo = uri.getUserInfo();
@@ -48,30 +48,38 @@ public class Back4AppDatabaseConfig {
                 throw new RuntimeException("Invalid DATABASE_URL format: " + databaseUrl, e);
             }
         } else {
-            // Use individual environment variables
+            // Use individual environment variables with SSL parameters
             String host = System.getenv().getOrDefault("DB_HOST", "localhost");
             String port = System.getenv().getOrDefault("DB_PORT", "5432");
             String database = System.getenv().getOrDefault("DB_NAME", "quiz_db");
             String username = System.getenv().getOrDefault("DB_USER", "postgres");
             String password = System.getenv().getOrDefault("DB_PASSWORD", "password");
             
-            String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + "/" + database;
+            String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + "/" + database + "?sslmode=require&ssl=true";
             config.setJdbcUrl(jdbcUrl);
             config.setUsername(username);
             config.setPassword(password);
             
             System.out.println("Using individual env vars: " + jdbcUrl);
+            System.out.println("Username: " + username);
+            System.out.println("Host: " + host);
         }
         
         config.setDriverClassName("org.postgresql.Driver");
-        config.setMaximumPoolSize(5);
-        config.setMinimumIdle(2);
-        config.setConnectionTimeout(20000);
+        config.setMaximumPoolSize(3);  // Reduced for Supabase free tier
+        config.setMinimumIdle(1);
+        config.setConnectionTimeout(30000);  // Increased timeout
+        config.setIdleTimeout(300000);  // 5 minutes
+        config.setMaxLifetime(600000);  // 10 minutes
         
         // Add SSL configuration for Supabase
         config.addDataSourceProperty("sslmode", "require");
         config.addDataSourceProperty("ssl", "true");
         config.addDataSourceProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+        
+        // Add additional connection properties for cloud databases
+        config.addDataSourceProperty("tcpKeepAlive", "true");
+        config.addDataSourceProperty("socketTimeout", "30");
         
         return new HikariDataSource(config);
     }
