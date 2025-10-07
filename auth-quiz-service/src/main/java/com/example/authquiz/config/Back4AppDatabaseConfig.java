@@ -10,6 +10,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.DriverManager;
 
 /**
  * Database configuration for Back4App deployment
@@ -40,6 +41,10 @@ public class Back4AppDatabaseConfig {
                     if (userParts.length > 1) {
                         config.setPassword(userParts[1]);
                     }
+                    System.out.println("Username from URL: " + userParts[0]);
+                    System.out.println("Password length: " + (userParts.length > 1 ? userParts[1].length() : 0));
+                } else {
+                    System.out.println("ERROR: No user info found in DATABASE_URL");
                 }
                 
                 System.out.println("Using DATABASE_URL format: " + jdbcUrl);
@@ -80,6 +85,24 @@ public class Back4AppDatabaseConfig {
         // Add additional connection properties for cloud databases
         config.addDataSourceProperty("tcpKeepAlive", "true");
         config.addDataSourceProperty("socketTimeout", "30");
+        
+        // Test connection before creating HikariDataSource
+        try {
+            System.out.println("Testing direct connection...");
+            java.sql.Connection testConn = java.sql.DriverManager.getConnection(
+                config.getJdbcUrl(), 
+                config.getUsername(), 
+                config.getPassword()
+            );
+            testConn.close();
+            System.out.println("Direct connection test: SUCCESS");
+        } catch (Exception e) {
+            System.out.println("Direct connection test FAILED: " + e.getMessage());
+            System.out.println("Error class: " + e.getClass().getSimpleName());
+            if (e.getCause() != null) {
+                System.out.println("Root cause: " + e.getCause().getMessage());
+            }
+        }
         
         return new HikariDataSource(config);
     }
