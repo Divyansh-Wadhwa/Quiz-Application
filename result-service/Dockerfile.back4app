@@ -18,10 +18,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built JAR from build stage
-COPY --from=build /app/target/auth-quiz-service-1.0.0.jar app.jar
+COPY --from=build /app/target/result-service-1.0.0.jar app.jar
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8082
 
 # Set environment variables
 ENV SPRING_PROFILES_ACTIVE=back4app

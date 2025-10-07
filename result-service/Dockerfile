@@ -1,22 +1,24 @@
-# Use OpenJDK 17 as base image
+# Multi-stage build for Back4App compatibility
+FROM maven:3.8.4-openjdk-17-slim AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml and source code
+COPY pom.xml .
+COPY src ./src
+
+# Package the application
+RUN mvn clean package -DskipTests
+
+# Runtime stage
 FROM openjdk:17-jdk-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
+# Copy the built JAR from build stage  
+COPY --from=build /app/target/result-service-1.0.0.jar app.jar
 
 # Expose port
 EXPOSE 8082
@@ -25,4 +27,4 @@ EXPOSE 8082
 ENV SPRING_PROFILES_ACTIVE=back4app
 
 # Run the application
-CMD ["java", "-jar", "target/result-service-1.0.0.jar"]
+CMD ["java", "-jar", "app.jar"]
