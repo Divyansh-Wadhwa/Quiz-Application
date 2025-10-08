@@ -62,15 +62,15 @@
         }
 
         async function testAuthAPI() {
-            await testAPI('Auth Service', `${window.AUTH_API_BASE}/health`);
+            await testAPI('Auth Service', `${window.AUTH_API_BASE}/admin/users/count`);
         }
 
         async function testQuestionAPI() {
-            await testAPI('Question Bank Service', `${window.QUESTION_API_BASE}/health`);
+            await testAPI('Question Bank Service', `${window.QUESTION_API_BASE}`);
         }
 
         async function testResultAPI() {
-            await testAPI('Result Service', `${window.RESULT_API_BASE}/health`);
+            await testAPI('Result Service', `${window.RESULT_API_BASE}`);
         }
 
         async function testAllAPIs() {
