@@ -1,0 +1,3 @@
+# Render Deployment Configuration
+build_command="echo 'Using Docker build'"
+start_command="echo 'Using Docker start'"

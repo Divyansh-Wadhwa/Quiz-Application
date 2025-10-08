@@ -1,0 +1,40 @@
+# Render Dockerfile for Spring Boot Quiz Application
+FROM maven:3.9.4-openjdk-17 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml files
+COPY auth-quiz-service/pom.xml auth-quiz-service/pom.xml
+COPY question-bank-service/pom.xml question-bank-service/pom.xml
+COPY result-service/pom.xml result-service/pom.xml
+
+# Copy source code
+COPY auth-quiz-service/src auth-quiz-service/src
+COPY question-bank-service/src question-bank-service/src
+COPY result-service/src result-service/src
+
+# Build all services
+RUN cd auth-quiz-service && mvn clean package -DskipTests
+RUN cd question-bank-service && mvn clean package -DskipTests
+RUN cd result-service && mvn clean package -DskipTests
+
+# Runtime stage
+FROM openjdk:17-jdk-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy JAR files
+COPY --from=build /app/auth-quiz-service/target/auth-quiz-service-1.0.0.jar auth-quiz-service.jar
+COPY --from=build /app/question-bank-service/target/question-bank-service-1.0.0.jar question-bank-service.jar
+COPY --from=build /app/result-service/target/result-service-1.0.0.jar result-service.jar
+
+# Copy frontend files
+COPY online-quiz-frontend /app/frontend
+
+# Expose port
+EXPOSE $PORT
+
+# Start auth service (main service)
+CMD java -Dserver.port=$PORT -Dspring.profiles.active=render -jar auth-quiz-service.jar
