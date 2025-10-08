@@ -1,0 +1,27 @@
+# Render Dockerfile for Result Service
+FROM maven:3.9.4-openjdk-17 AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml and source
+COPY result-service/pom.xml pom.xml
+COPY result-service/src src
+
+# Build the service
+RUN mvn clean package -DskipTests
+
+# Runtime stage
+FROM openjdk:17-jdk-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy JAR file
+COPY --from=build /app/target/result-service-1.0.0.jar result-service.jar
+
+# Expose port
+EXPOSE $PORT
+
+# Start service
+CMD java -Dserver.port=$PORT -Dspring.profiles.active=render -jar result-service.jar
