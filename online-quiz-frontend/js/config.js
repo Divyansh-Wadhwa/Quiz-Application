@@ -15,11 +15,11 @@ if (isDevelopment) {
     RESULT_API_BASE = `http://${API_HOST}:8082/api/results`;
     console.log('🔧 Running in DEVELOPMENT mode');
 } else {
-    // Production URLs - These will be automatically updated during deployment
-    AUTH_API_BASE = window.PRODUCTION_AUTH_API || 'https://quiz-auth-production.up.railway.app/api/auth';
-    QUESTION_API_BASE = window.PRODUCTION_QUESTION_API || 'https://quiz-questions-production.up.railway.app/api/questions';
-    RESULT_API_BASE = window.PRODUCTION_RESULT_API || 'https://quiz-results-production.up.railway.app/api/results';
-    console.log('🚀 Running in PRODUCTION mode');
+    // Production URLs - Render deployment
+    AUTH_API_BASE = window.PRODUCTION_AUTH_API || 'https://quiz-app.onrender.com/api/auth';
+    QUESTION_API_BASE = window.PRODUCTION_QUESTION_API || 'https://quiz-question-bank.onrender.com/api/questions';
+    RESULT_API_BASE = window.PRODUCTION_RESULT_API || 'https://quiz-result-service.onrender.com/api/results';
+    console.log('🚀 Running in PRODUCTION mode on Render');
     console.log('Auth API:', AUTH_API_BASE);
     console.log('Question API:', QUESTION_API_BASE);
     console.log('Result API:', RESULT_API_BASE);
